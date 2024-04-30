@@ -1,125 +1,219 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MyApp());
+class YoutubePlayerController {
+  final String initialVideoId;
+  final bool mute;
+  final bool autoPlay;
+  final bool disableDragSeek;
+  final bool loop;
+  final bool isLive;
+  final bool forceHD;
+  final bool enableCaption;
+
+  late bool _isPlaying;
+  late double _volume;
+  late bool _muted;
+
+  YoutubePlayerController({
+    required this.initialVideoId,
+    this.mute = false,
+    this.autoPlay = true,
+    this.disableDragSeek = false,
+    this.loop = false,
+    this.isLive = false,
+    this.forceHD = false,
+    this.enableCaption = true,
+  }) {
+    _isPlaying = autoPlay;
+    _volume = mute ? 0 : 100;
+    _muted = mute;
+  }
+
+  bool get isPlaying => _isPlaying;
+  double get volume => _volume;
+  bool get isMuted => _muted;
+
+  void play() {
+    _isPlaying = true;
+    // Add logic to play the video
+  }
+
+  void pause() {
+    _isPlaying = false;
+    // Add logic to pause the video
+  }
+
+  // void mute() {
+  //   _muted = true;
+  //   _volume = 0;
+  //   // Add logic to mute the video
+  // }
+
+  void unMute() {
+    _muted = false;
+    _volume = 100;
+    // Add logic to unmute the video
+  }
+
+  void setVolume(double volume) {
+    _volume = volume;
+    // Add logic to set the volume of the video
+  }
+
+  void dispose() {
+    // // Release resources associated with the video player
+    // // For example:
+    // // - Stop video playback
+    // // - Release any streams or controllers
+    // // - Dispose of any listeners or subscriptions
+    //
+    // // _controller.pause(); // Example: Stop video playback
+    //
+    // // Dispose of any TextEditingController instances
+    // _idController.dispose();
+    // _seekToController.dispose();
+    //
+    // // Dispose of the YoutubePlayerController instance
+    // _controller.dispose();
+  }
+
+// Add more methods and properties as needed
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // This widget is the root of your application.
+class YoutubePlayerDemoApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+      title: 'Youtube Player Flutter',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+        primarySwatch: Colors.blue,
+        appBarTheme: const AppBarTheme(
+          color: Colors.blueAccent,
+          titleTextStyle: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w300,
+            fontSize: 20,
+          ),
+        ),
+        iconTheme: const IconThemeData(
+          color: Colors.blueAccent,
+        ),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  late YoutubePlayerController _controller;
+  late TextEditingController _idController;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  final List<String> _ids = [
+    'nPt8bK2gbaU',
+    'gQDByCdjUXw',
+    'iLnmTe5Q2Qw',
+    '_WoCV4c6XOE',
+    'KmzdUe0RSJo',
+    '6jZDSSZZxjQ',
+    'p2lYr3vM_1w',
+    '7QUtEmBT_-w',
+    '34_PXCzGw1M',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = YoutubePlayerController(
+      initialVideoId: _ids.first,
+    );
+    _idController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _idController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
+        title: const Text(
+          'Youtube Player Flutter',
+          style: TextStyle(color: Colors.white),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      body: ListView(
+        children: [
+          YoutubePlayer(controller: _controller),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 10),
+                TextField(
+                  controller: _idController,
+                  decoration: InputDecoration(
+                    hintText: 'Enter YouTube video ID',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    if (_idController.text.isNotEmpty) {
+                      _controller = YoutubePlayerController(
+                        initialVideoId: _idController.text,
+                      );
+                      setState(() {});
+                    }
+                  },
+                  child: const Text('Play Video'),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
+}
+
+class YoutubePlayer extends StatelessWidget {
+  final YoutubePlayerController controller;
+
+  const YoutubePlayer({Key? key, required this.controller}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      alignment: Alignment.center,
+      height: 200,
+      child: AspectRatio(
+        aspectRatio: 16 / 9,
+        child: Container(
+          color: Colors.black,
+          child: Center(
+            child: Text(
+              'Video Player Placeholder',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+void main() {
+  runApp(YoutubePlayerDemoApp());
 }
